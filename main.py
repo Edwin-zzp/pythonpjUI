@@ -17,8 +17,9 @@ fname="D:/VIDEO/12.mp4"
 
 
 class G:
-    port=99
+    port=9999
     stop = True
+    ip="0.0.0.0"
 
 class MyWindow (QtWidgets.QMainWindow,Ui_MainWindow):
     def __init__(self):
@@ -51,35 +52,46 @@ class Reader(threading.Thread):
         self.client = client
 
     def run(self):
-        while not G.stop:
-            data = self.client.recv(BUFSIZE)
-            if (data):
-                string = bytes.decode(data, encoding)
-                print ("from client::", string, "")
+        #try:
+            while True:
+                print("reader on")
+                if not G.stop :
+                    data = self.client.recv(BUFSIZE)
+                    if (data):
+                        string = bytes.decode(data, encoding)
+                        print ("from::", self.client.getpeername(),":",string, "")
+                        if string == "open":
+                            #win32api.keybd_event(27, 0, 0, 0)  # ESC
+                            time.sleep(0.01)
+                            #win32api.keybd_event(27, 0, win32con.KEYEVENTF_KEYUP, 0)
+                            os.popen(r"D:/VIDEO/mplayer.exe  -loop 0 -fixed-vo " + fname)  # -fs
 
-                if string == "open":
-                    #win32api.keybd_event(27, 0, 0, 0)  # ESC
-                    time.sleep(0.01)
-                    #win32api.keybd_event(27, 0, win32con.KEYEVENTF_KEYUP, 0)
-                    os.popen(r"D:/VIDEO/mplayer.exe  -loop 0 -fixed-vo " + fname)  # -fs
-                if string == "pause":
-                    #win32api.keybd_event(32, 0, 0, 0)  # 空格
-                    time.sleep(0.01)
-                    #win32api.keybd_event(32, 0, win32con.KEYEVENTF_KEYUP, 0)
+                        if string == "pause":
+                            #win32api.keybd_event(32, 0, 0, 0)  # 空格
+                            time.sleep(0.01)
+                            #win32api.keybd_event(32, 0, win32con.KEYEVENTF_KEYUP, 0)
 
-                if string == "full":
-                    #win32api.keybd_event(70, 0, 0, 0)  # 输入f
-                    time.sleep(0.01)
-                    #win32api.keybd_event(70, 0, win32con.KEYEVENTF_KEYUP, 0)
-                if string == "send":
-                    self.client.sendall(bytes("你好" + "\n", encoding))
-                    self.client.sendall(bytes("天才" + "\n", encoding))
-                #self.client.send("return frome server::" + string)
-            else:
-                print("close:", self.client.getpeername())
-                self.client.shutdown(2)
-                self.client.close()
-                break
+                        if string == "full":
+                            #win32api.keybd_event(70, 0, 0, 0)  # 输入f
+                            time.sleep(0.01)
+                            #win32api.keybd_event(70, 0, win32con.KEYEVENTF_KEYUP, 0)
+                        if string == "send":
+                            self.client.sendall(bytes("你好" + "\n", encoding))
+                            self.client.sendall(bytes("天才" + "\n", encoding))
+                            #self.client.send("return frome server::" + string)
+                    else:
+                        print("close:", self.client.getpeername())
+                        #self.client.shutdown(0)
+                        self.client.close()
+                        break
+                else:
+                    print("stop = ",G.stop)
+                    #self.client.shutdown(0)
+                    self.client.close()
+                    break
+            print("reader out")
+        #except socket.error:
+            #print("Read error")
 
 
 
@@ -97,23 +109,19 @@ class Listener(threading.Thread):
 
     def run(self):
         print("listener started")
-        while not G.stop:
-            #client, cltadd = self.sock.accept()
-            #print("accept a connect...")
-            #Reader(client).start()
-            #cltadd = cltadd
-            #print(cltadd)
-            #print("accept a connect(new reader..)")
-            try:
+        while True:
+            if not G.stop:
                 client, cltadd = self.sock.accept()
-                #client.setblocking(True)
                 print("accept a connect...")
                 Reader(client).start()
                 cltadd = cltadd
-                print(cltadd)
+                #print(cltadd)
                 print("accept a connect(new reader..)")
-            except socket.error:
-                print("accept error")
+            else:
+                self.sock.close()
+                break
+        print("listener out")
+
 
 
 
@@ -124,12 +132,12 @@ if __name__=="__main__":
     myshow = MyWindow()
     myshow.show()
 
-    ip = get_host_ip()
+    G.ip = get_host_ip()
     #port = "9999"
-    #myshow.lineEdit.setText(port)
+    myshow.lineEdit.setText(str(G.port))
 
     
-    myshow.textBrowser.setText(ip)
+    myshow.textBrowser.setText(G.ip)
 
 
     print("watch is show")
