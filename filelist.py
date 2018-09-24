@@ -1,7 +1,7 @@
 # encoding: utf-8
 import os,sys
 
-path = "/Users/zhang/Desktop/pythonpj"                           # 设置路径
+path = "D:\PycharmProjects\pythonpjUI"                           # 设置路径
 dirs = os.listdir(path)        # 获取指定路径下的文件
 
 

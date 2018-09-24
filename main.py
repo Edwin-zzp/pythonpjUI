@@ -1,8 +1,8 @@
 import sys
 import socket
 
-#import win32api
-#import win32con
+import win32api
+import win32con
 import os
 import threading
 import time
@@ -61,20 +61,20 @@ class Reader(threading.Thread):
                         string = bytes.decode(data, encoding)
                         print ("from::", self.client.getpeername(),":",string, "")
                         if string == "open":
-                            #win32api.keybd_event(27, 0, 0, 0)  # ESC
+                            win32api.keybd_event(27, 0, 0, 0)  # ESC
                             time.sleep(0.01)
-                            #win32api.keybd_event(27, 0, win32con.KEYEVENTF_KEYUP, 0)
+                            win32api.keybd_event(27, 0, win32con.KEYEVENTF_KEYUP, 0)
                             os.popen(r"D:/VIDEO/mplayer.exe  -loop 0 -fixed-vo " + fname)  # -fs
 
                         if string == "pause":
-                            #win32api.keybd_event(32, 0, 0, 0)  # 空格
+                            win32api.keybd_event(32, 0, 0, 0)  # 空格
                             time.sleep(0.01)
-                            #win32api.keybd_event(32, 0, win32con.KEYEVENTF_KEYUP, 0)
+                            win32api.keybd_event(32, 0, win32con.KEYEVENTF_KEYUP, 0)
 
                         if string == "full":
-                            #win32api.keybd_event(70, 0, 0, 0)  # 输入f
+                            win32api.keybd_event(70, 0, 0, 0)  # 输入f
                             time.sleep(0.01)
-                            #win32api.keybd_event(70, 0, win32con.KEYEVENTF_KEYUP, 0)
+                            win32api.keybd_event(70, 0, win32con.KEYEVENTF_KEYUP, 0)
                         if string == "send":
                             self.client.sendall(bytes("你好" + "\n", encoding))
                             self.client.sendall(bytes("天才" + "\n", encoding))
