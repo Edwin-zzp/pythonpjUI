@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>603</width>
-    <height>441</height>
+    <width>651</width>
+    <height>785</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -86,13 +86,23 @@
      <string>stop</string>
     </property>
    </widget>
+   <widget class="QListWidget" name="listWidget">
+    <property name="geometry">
+     <rect>
+      <x>50</x>
+      <y>280</y>
+      <width>391</width>
+      <height>321</height>
+     </rect>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>603</width>
+     <width>651</width>
      <height>23</height>
     </rect>
    </property>
@@ -149,10 +159,27 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>listWidget</sender>
+   <signal>itemDoubleClicked(QListWidgetItem*)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>selectOnClick()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>233</x>
+     <y>617</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>237</x>
+     <y>669</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>sendOnClick()</slot>
   <slot>portchange()</slot>
   <slot>stopOnClick()</slot>
+  <slot>selectOnClick()</slot>
  </slots>
 </ui>

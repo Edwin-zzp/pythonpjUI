@@ -9,16 +9,21 @@ import time
 
 
 from PyQt5 import QtWidgets
+from PyQt5.QtWidgets import QMessageBox
 from firstUI import Ui_MainWindow
 
 encoding = 'gb2312'
-BUFSIZE = 1024
-fname="D:/VIDEO/12.mp4"
+
+
+
 
 
 class G:
-    port=99
+    port=9999
     stop = True
+    BUFSIZE = 1024
+    name = ""
+    fname = "D:/VIDEO/"
 
 class MyWindow (QtWidgets.QMainWindow,Ui_MainWindow):
     def __init__(self):
@@ -33,6 +38,18 @@ class MyWindow (QtWidgets.QMainWindow,Ui_MainWindow):
         lst.start()
     def stopOnClick(self):
         G.stop=True
+    def selectOnClick(self,item):
+        G.name = item.text()
+        print(G.fname)
+        print("name="+G.name)
+        button = QMessageBox.question(self, "Movie", "你选择了: " + item.text()+"影片\n"+"是否确定？",QMessageBox.Ok|QMessageBox.Cancel,QMessageBox.Ok)
+        if button == QMessageBox.Ok:
+            G.fname=path+G.name
+            os.popen(r"D:/VIDEO/mplayer.exe  -loop 0 -fixed-vo " + G.fname)
+        elif button == QMessageBox.Cancel:
+            return
+        else:
+            return
 
 
 def get_host_ip():
@@ -47,12 +64,13 @@ def get_host_ip():
 # a read thread, read data from remote
 class Reader(threading.Thread):
     def __init__(self, client):
+        print("Read work")
         threading.Thread.__init__(self)
         self.client = client
 
     def run(self):
         while not G.stop:
-            data = self.client.recv(BUFSIZE)
+            data = self.client.recv(G.BUFSIZE)
             if (data):
                 string = bytes.decode(data, encoding)
                 print ("from client::", string, "")
@@ -61,7 +79,8 @@ class Reader(threading.Thread):
                     win32api.keybd_event(27, 0, 0, 0)  # ESC
                     time.sleep(0.01)
                     win32api.keybd_event(27, 0, win32con.KEYEVENTF_KEYUP, 0)
-                    os.popen(r"D:/VIDEO/mplayer.exe  -loop 0 -fixed-vo " + fname)  # -fs
+                    G.fname = path + G.name
+                    os.popen(r"D:/VIDEO/mplayer.exe  -loop 0 -fixed-vo " + G.fname)  # -fs
                 if string == "pause":
                     win32api.keybd_event(32, 0, 0, 0)  # 空格
                     time.sleep(0.01)
@@ -72,8 +91,15 @@ class Reader(threading.Thread):
                     time.sleep(0.01)
                     win32api.keybd_event(70, 0, win32con.KEYEVENTF_KEYUP, 0)
                 if string == "send":
-                    self.client.sendall(bytes("你好" + "\n", encoding))
-                    self.client.sendall(bytes("天才" + "\n", encoding))
+                    # self.client.sendall(bytes("你好" + "\n", encoding))
+                    # self.client.sendall(bytes("天才" + "\n", encoding))
+                    print(len(item))
+                    for i in range(0,len(item)):
+                        print(item[i])
+                        self.client.sendall(bytes(item[i]+"\n",encoding))
+
+                if string == "test":
+                    self.client.sendall(bytes("ok" + "\n", encoding))
                 #self.client.send("return frome server::" + string)
             else:
                 print("close:", self.client.getpeername())
@@ -98,22 +124,12 @@ class Listener(threading.Thread):
     def run(self):
         print("listener started")
         while not G.stop:
-            #client, cltadd = self.sock.accept()
-            #print("accept a connect...")
-            #Reader(client).start()
-            #cltadd = cltadd
+            client, cltadd = self.sock.accept()
+            print("accept a connect...")
+            Reader(client).start()
+            cltadd = cltadd
             #print(cltadd)
-            #print("accept a connect(new reader..)")
-            try:
-                client, cltadd = self.sock.accept()
-                #client.setblocking(True)
-                print("accept a connect...")
-                Reader(client).start()
-                cltadd = cltadd
-                print(cltadd)
-                print("accept a connect(new reader..)")
-            except socket.error:
-                print("accept error")
+            print("accept a connect(new reader..)")
 
 
 
@@ -128,8 +144,23 @@ if __name__=="__main__":
     #port = "9999"
     #myshow.lineEdit.setText(port)
 
-    
+
     myshow.textBrowser.setText(ip)
+    myshow.lineEdit.setText(str(G.port))
+
+    item=[]
+
+    path = "D:/VIDEO/"  # 设置路径
+    dirs = os.listdir(path)  # 获取指定路径下的文件
+    print(dirs)
+
+    for i in dirs :
+        if os.path.splitext(i)[1] == ".mp4":
+            item.append(i)
+    print(item)
+
+    for i in range(0,len(item)):
+        myshow.listWidget.addItem(item[i])
 
 
     print("watch is show")

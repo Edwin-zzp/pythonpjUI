@@ -11,7 +11,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(603, 441)
+        MainWindow.resize(651, 785)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.pushButton = QtWidgets.QPushButton(self.centralwidget)
@@ -32,9 +32,12 @@ class Ui_MainWindow(object):
         self.pushButton_2 = QtWidgets.QPushButton(self.centralwidget)
         self.pushButton_2.setGeometry(QtCore.QRect(310, 150, 91, 31))
         self.pushButton_2.setObjectName("pushButton_2")
+        self.listWidget = QtWidgets.QListWidget(self.centralwidget)
+        self.listWidget.setGeometry(QtCore.QRect(50, 280, 391, 321))
+        self.listWidget.setObjectName("listWidget")
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 603, 23))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 651, 23))
         self.menubar.setObjectName("menubar")
         MainWindow.setMenuBar(self.menubar)
         self.statusbar = QtWidgets.QStatusBar(MainWindow)
@@ -45,6 +48,7 @@ class Ui_MainWindow(object):
         self.pushButton.clicked.connect(MainWindow.sendOnClick)
         self.lineEdit.textEdited['QString'].connect(MainWindow.portchange)
         self.pushButton_2.clicked.connect(MainWindow.stopOnClick)
+        self.listWidget.itemDoubleClicked['QListWidgetItem*'].connect(MainWindow.selectOnClick)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
